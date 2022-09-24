@@ -59,15 +59,17 @@ class Market {
 
   final String name;
   final double price;
+  final double btcPrice;
   final String logo;
 
-  Market(this.name, this.price, this.logo);
+  Market(this.name, this.price, this.logo, this.btcPrice);
 
   factory Market.fromJson(Map<String, dynamic> json) {
     return Market(
       json['name'],
       json['quote']['USD']['price'],
-      "https://s2.coinmarketcap.com/static/img/coins/64x64/${json['id']}.png"
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/${json['id']}.png",
+      json['quote']['BTC']['price'],
     );
   }
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class Nav{
   static const iconSize = 24.0;
-  static const selectedIconSize = 40.0;
+  static const selectedIconSize = 50.0;
   var icon;
   var text;
   var route;
@@ -30,7 +30,8 @@ class BottomNavigationState extends State<BottomNavigation> {
   }
 
   Widget build(BuildContext context) {
-    return DecoratedBox(
+    return Container(
+        height: 85,
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
@@ -47,14 +48,26 @@ class BottomNavigationState extends State<BottomNavigation> {
                     setState(() {
                       selected = nav;
                     });
-                    Navigator.of(context).pushNamed(nav.route);
                   },
                       child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: nav == selected ? 8 : 15),
+                          padding: EdgeInsets.zero,
                           child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(nav.icon, size: (nav == selected) ? Nav.selectedIconSize : Nav.iconSize),
-                                Text(nav.text)
+                                AnimatedContainer(
+                                  duration: Duration(milliseconds: 400),
+                                  curve: Curves.elasticOut,
+                                  height: (nav == selected)
+                                      ? Nav.selectedIconSize : Nav.iconSize,
+                                  child: FittedBox(
+                                    child: Icon(nav.icon),
+                                  ),
+                                ),
+                                AnimatedContainer(
+                                    duration: Duration(milliseconds: 100),
+                                  height: (nav == selected) ? 0 : 15,
+                                  child: Text(nav.text)
+                                )
                               ]
                           ),
                       )

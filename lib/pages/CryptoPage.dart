@@ -14,6 +14,9 @@ class CryptoPage extends StatefulWidget {
 class CryptoPageState extends State<CryptoPage> with SingleTickerProviderStateMixin {
 
   var backgroundColor = Colors.blue;
+  var formKey = GlobalKey<FormState>();
+  var priceInput = TextEditingController();
+  var coinInput = TextEditingController();
 
   void initState() {
     Timer.periodic(Duration(seconds: 2), (timer) {
@@ -36,21 +39,55 @@ class CryptoPageState extends State<CryptoPage> with SingleTickerProviderStateMi
 
     return Scaffold(
       appBar: AppBar(title: Text(args.name)),
-      body: AnimatedContainer(
-        duration: Duration(seconds: 1),
-        decoration: BoxDecoration(
-            color: backgroundColor
-        ),
+      body: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16),
         child: Center(
-          child: ElevatedButton(
-              child: Text("Play"), onPressed: () {
-            setState(() {
-              backgroundColor = Colors.green;
-            });
-          }
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextFormField(
+                  controller: priceInput,
+                  validator: (value) {
+                    if (value == '') {
+                      return 'This field is required.';
+                    }
+                    return null;
+                  },
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                      label: Text("Price USD"),
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                TextFormField(
+                  controller: coinInput,
+                  readOnly: true,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                      label: Text("Price ${args.name}"),
+                      border: OutlineInputBorder()
+                  ),
+                ),
+                Row(
+                  children: [
+                    Expanded(child:
+                      ElevatedButton(onPressed: () {
+                        if(formKey.currentState!.validate()) {
+                          coinInput.text = (int.parse(priceInput.text) * args.price).toString();
+                        }
+                      },
+                          child: Text("Convert")
+                      )
+                    )
+                  ],
+                )
+              ],
+            ),
           ),
         ),
-      ),
+      )
     );
   }
 
