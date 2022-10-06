@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firstproject/coinmarketcap.dart';
+import 'package:firstproject/database/favorites.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -17,20 +18,36 @@ class CryptoPageState extends State<CryptoPage> with SingleTickerProviderStateMi
   var formKey = GlobalKey<FormState>();
   var priceInput = TextEditingController();
   var coinInput = TextEditingController();
+  var favorites = Favorites();
+  var isInFavorites = false;
 
   void initState() {
-    Timer.periodic(Duration(seconds: 2), (timer) {
-      setState(() {
-        backgroundColor = Colors.blue;
+    favorites.connect().then((value) {
+      favorites.getFavorites().then((value) {
+        print(value);
+        Market args = ModalRoute.of(context)!.settings.arguments as Market;
+        for (var m in value) {
+          if (m.name == args.name) {
+            setState(() {
+              isInFavorites = true;
+            });
+            break;
+          }
+        }
       });
     });
-    Future.delayed(Duration(seconds: 1), () {
-      Timer.periodic(Duration(seconds: 2), (timer) {
-        setState(() {
-          backgroundColor = Colors.red;
-        });
-      });
-    });
+    // Timer.periodic(Duration(seconds: 2), (timer) {
+    //   setState(() {
+    //     backgroundColor = Colors.blue;
+    //   });
+    // });
+    // Future.delayed(Duration(seconds: 1), () {
+    //   Timer.periodic(Duration(seconds: 2), (timer) {
+    //     setState(() {
+    //       backgroundColor = Colors.red;
+    //     });
+    //   });
+    // });
   }
 
   @override
@@ -38,7 +55,24 @@ class CryptoPageState extends State<CryptoPage> with SingleTickerProviderStateMi
     Market args = ModalRoute.of(context)!.settings.arguments as Market;
 
     return Scaffold(
-      appBar: AppBar(title: Text(args.name)),
+      appBar: AppBar(
+          title: Text(args.name),
+        actions: [
+          IconButton(onPressed: () {
+            if (isInFavorites) {
+              favorites.removeFromFavorites(args);
+              setState(() {
+                isInFavorites = false;
+              });
+            } else {
+              favorites.addToFavorites(args);
+              setState(() {
+                isInFavorites = true;
+              });
+            }
+          }, icon: Icon(isInFavorites ? Icons.star : Icons.star_outline))
+        ],
+      ),
       body: Container(
         padding: EdgeInsets.symmetric(horizontal: 16),
         child: Center(
